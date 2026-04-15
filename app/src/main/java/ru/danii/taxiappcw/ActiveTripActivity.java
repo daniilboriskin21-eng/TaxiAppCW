@@ -23,6 +23,11 @@ import androidx.core.content.ContextCompat;
 import ru.danii.taxiappcw.services.TaxiForegroundService;
 import ru.danii.taxiappcw.utils.SettingsManager;
 
+/**
+ * Экран активной поездки.
+ * Отвечает за симуляцию процесса поездки, управление фоновым сервисом
+ * и информирование пользователя через уведомления.
+ */
 public class ActiveTripActivity extends AppCompatActivity {
 
     private TextView tvTripStatus;
@@ -44,6 +49,10 @@ public class ActiveTripActivity extends AppCompatActivity {
                 }
             });
 
+    /**
+     * Инициализирует компоненты интерфейса и запускает проверку разрешений.
+     * @param savedInstanceState Состояние экземпляра.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         settingsManager = new SettingsManager(this);
@@ -84,6 +93,10 @@ public class ActiveTripActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(v -> stopTaxiService());
     }
 
+    /**
+     * Выполняет комплексную проверку разрешений на местоположение и уведомления.
+     * Запускает сервис только при наличии всех необходимых доступов.
+     */
     private void checkPermissionsAndStart() {
         // 1. Проверяем GPS (ACCESS_FINE_LOCATION)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -135,6 +148,10 @@ public class ActiveTripActivity extends AppCompatActivity {
     }
     private static final String CHANNEL_ID = "taxi_status_channel";
 
+    /**
+     * Создает канал уведомлений для Android 8.0+.
+     * Необходимо для корректной работы NotificationManager.
+     */
     private void createNotificationChannel() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             android.app.NotificationChannel channel = new android.app.NotificationChannel(
@@ -154,6 +171,10 @@ public class ActiveTripActivity extends AppCompatActivity {
 
     private boolean isTripSaved = false; // Поле класса в самом верху
 
+    /**
+     * Имитирует этапы выполнения заказа: ожидание, путь и завершение.
+     * Обновляет UI и отправляет системные уведомления.
+     */
     private void startTripSimulation() {
         // Сохраняем ТОЛЬКО ОДИН РАЗ в момент фактического начала процесса
         if (!isTripSaved) {

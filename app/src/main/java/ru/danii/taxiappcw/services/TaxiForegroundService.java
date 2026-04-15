@@ -14,8 +14,9 @@ import androidx.core.app.NotificationCompat;
 import ru.danii.taxiappcw.R;
 
 /**
- * Служба для фонового сопровождения поездки.
- * Обеспечивает отображение уведомления со статусом заказа.
+ * Фоновый сервис для отслеживания местоположения во время поездки.
+ * Работает в режиме Foreground Service, что позволяет приложению
+ * сохранять активность при сворачивании.
  */
 public class TaxiForegroundService extends Service {
 
@@ -28,6 +29,10 @@ public class TaxiForegroundService extends Service {
         createNotificationChannel();
     }
 
+    /**
+     * Вызывается при запуске сервиса. Создает стойкое уведомление (Sticky Notification),
+     * которое удерживает сервис в памяти системы.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Создаем уведомление для запуска службы в режиме Foreground

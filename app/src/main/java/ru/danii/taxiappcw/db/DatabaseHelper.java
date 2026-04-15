@@ -38,7 +38,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Метод для сохранения новой поездки в базу.
+     * Добавляет новую запись о поездке в базу данных.
+     * @param from Точка отправления.
+     * @param to Точка назначения.
+     * @param tariff Выбранный тарифный план.
      */
     public void addRide(String from, String to, String tariff) {
         SQLiteDatabase db = this.getWritableDatabase();
