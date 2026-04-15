@@ -14,12 +14,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import ru.danii.taxiappcw.db.DatabaseHelper;
+import android.os.Vibrator;
+import android.os.VibrationEffect;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import ru.danii.taxiappcw.receivers.TripBroadcastReceiver;
 import ru.danii.taxiappcw.services.TaxiForegroundService;
 import ru.danii.taxiappcw.utils.SettingsManager;
 
@@ -168,7 +171,22 @@ public class ActiveTripActivity extends AppCompatActivity {
 
     // Внутри ActiveTripActivity.java
     private Handler simulationHandler = new Handler(Looper.getMainLooper());
+    /**
+     * Реализует тактильный отклик (вибрацию) при изменении статуса заказа.
+     * Использует Vibrator для старых версий и VibrationEffect для новых.
+     */
+    private void triggerVibration() {
+        android.os.Vibrator v = (android.os.Vibrator) getSystemService(android.content.Context.VIBRATOR_SERVICE);
+        if (v == null || !v.hasVibrator()) return;
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            // Короткая двойная вибрация для API 26+
+            v.vibrate(android.os.VibrationEffect.createOneShot(500, android.os.VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            // Для старых устройств
+            v.vibrate(500);
+        }
+    }
     private boolean isTripSaved = false; // Поле класса в самом верху
 
     /**
@@ -194,12 +212,15 @@ public class ActiveTripActivity extends AppCompatActivity {
 
         sendStatusNotification("Ищем машину...");
 
+
         // Твой текущий код симуляции (Handler и т.д.)
         simulationHandler.postDelayed(() -> {
             String status = "Водитель на месте";
             tvTripStatus.setText(status);
             tripProgressBar.setProgress(20);
             sendStatusNotification(status);
+            triggerVibration();
+            notifyStatusChange(status);
         }, 5000);
 
         // Этап 2: Поездка началась
@@ -210,6 +231,8 @@ public class ActiveTripActivity extends AppCompatActivity {
             btnCancel.setEnabled(false);
             btnCancel.setAlpha(0.5f);
             sendStatusNotification(status);
+            triggerVibration();
+            notifyStatusChange(status);
         }, 10000);
 
         // Этап 3: Завершение и переход в MAIN
@@ -219,6 +242,8 @@ public class ActiveTripActivity extends AppCompatActivity {
             tvTripStatus.setText(status);
             tripProgressBar.setProgress(100);
             sendStatusNotification(status);
+            triggerVibration();
+            notifyStatusChange(status);
 
             // Останавливаем сервис
             stopTaxiService();
@@ -232,6 +257,12 @@ public class ActiveTripActivity extends AppCompatActivity {
         }, 20000);
     }
 
+    private void notifyStatusChange(String status) {
+        Intent intent = new Intent(TripBroadcastReceiver.ACTION_TRIP_STATUS);
+        intent.putExtra("status", status);
+        // Отправляем на все приложение
+        sendBroadcast(intent);
+    }
     private void stopTaxiService() {
         // 1. ОСТАНАВЛИВАЕМ ВСЕ ТАЙМЕРЫ
         if (simulationHandler != null) {
