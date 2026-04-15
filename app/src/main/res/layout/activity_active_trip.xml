@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="16dp"
+    android:gravity="center_horizontal"
+    android:fitsSystemWindows="true"
+    android:background="?android:windowBackground">
+
+    <TextView
+        android:id="@+id/tvTripStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/status_searching"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp"
+        android:textColor="?android:textColorPrimary"/>
+
+    <ProgressBar
+        android:id="@+id/tripProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="0"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/tvTripDetails"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:lineSpacingExtra="4dp"
+        android:textSize="16sp"
+        android:textColor="?android:textColorPrimary"/>
+
+    <Button
+        android:id="@+id/btnCancelTrip"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="@string/btn_cancel_trip"
+        style="@style/Widget.MaterialComponents.Button.TextButton"/>
+</LinearLayout>

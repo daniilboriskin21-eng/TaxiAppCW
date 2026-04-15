@@ -1,0 +1,52 @@
+<resources>
+    <string name="app_name">Taxi App CW</string>
+
+    <string name="title_main">Заказ такси</string>
+    <string name="title_settings">Настройки приложения</string>
+    <string name="title_tariff">Выбор тарифа</string>
+
+    <string name="hint_departure">Откуда (точка подачи)</string>
+    <string name="hint_destination">Куда (точка назначения)</string>
+    <string name="hint_comment">Комментарий водителю (необязательно)</string>
+
+    <string name="btn_next">Выбрать тариф</string>
+    <string name="btn_copy">Копировать</string>
+    <string name="btn_paste">Вставить</string>
+    <string name="btn_confirm_order">Подтвердить заказ</string>
+    <string name="btn_cancel_trip">Отменить поездку</string>
+
+    <string name="tariff_economy">Эконом</string>
+    <string name="tariff_comfort">Комфорт</string>
+    <string name="tariff_business">Бизнес</string>
+    <string name="option_child_seat">Детское кресло</string>
+    <string name="option_quiet_driver">Тихий водитель</string>
+
+    <string name="status_searching">Поиск ближайшего такси...</string>
+    <string name="status_driver_found">Водитель назначен и едет к вам</string>
+    <string name="trip_details_format">Маршрут: %1$s -> %2$s\nТариф: %3$s</string>
+    <string name="error_empty_fields">Пожалуйста, заполните оба адреса</string>
+    <string name="error_gps_denied">Доступ к GPS отклонен. Функции ограничены.</string>
+
+    <string name="notification_channel_id">taxi_trip_channel</string>
+    <string name="notification_channel_name">Статус поездки</string>
+    <string name="notification_title">Ваш заказ такси</string>
+    <string name="notification_driver_on_way">Водитель принял заказ и будет через 5 минут</string>
+    <string name="notification_arrived">Такси ожидает по адресу подачи</string>
+
+    <string name="label_theme">Тема оформления</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
+    <string name="theme_system">Системная</string>
+    <string name="dev_info">Разработчик: Даниил\nВариант №3: Заказ такси</string>
+
+    <string name="error_no_internet">Внимание: отсутствует подключение к сети. Заказ может быть недоступен.</string>
+    <string name="network_restored">Соединение восстановлено</string>
+
+    <string name="label_from">Откуда: %1$s</string>
+    <string name="label_to">Куда: %1$s</string>
+    <string name="label_tariff">Тариф: %1$s</string>
+    <string name="label_comment">Комментарий: %1$s</string>
+    <string name="label_child_seat">⚡ Опция: Детское кресло</string>
+    <string name="lastTrip">Повторить последнюю</string>
+    <string name="historyTrip">История поездок</string>
+</resources>

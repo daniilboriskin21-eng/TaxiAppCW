@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="16dp"
+    android:fitsSystemWindows="true"
+    android:background="?android:windowBackground">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_tariff"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"
+        android:textColor="?android:textColorPrimary"/>
+
+    <RadioGroup
+        android:id="@+id/rgTariff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp">
+        <RadioButton android:id="@+id/rbEconomy" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tariff_economy" android:checked="true"/>
+        <RadioButton android:id="@+id/rbComfort" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tariff_comfort"/>
+        <RadioButton android:id="@+id/rbBusiness" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tariff_business"/>
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/etComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_comment"
+        android:inputType="textCapSentences"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_edittext"
+        android:padding="12dp"/>
+
+    <CheckBox android:id="@+id/cbChildSeat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/option_child_seat"/>
+    <CheckBox android:id="@+id/cbQuiet" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/option_quiet_driver" android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="@string/btn_confirm_order"
+        android:backgroundTint="@color/accent_taxi"
+        android:textColor="@color/primary_dark"/>
+</LinearLayout>

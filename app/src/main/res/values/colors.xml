@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#212121</color>
+    <color name="primary_light">#484848</color>
+    <color name="primary_dark">#000000</color>
+
+    <color name="accent_taxi">#FFD600</color>
+
+    <color name="background_light">#F5F5F7</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="text_main_light">#1D1D1F</color>
+
+    <color name="background_dark">#121212</color>
+    <color name="surface_dark">#1E1E1E</color>
+    <color name="text_main_dark">#F5F5F7</color>
+    <color name="backgroundTarrifTagColor">#1A00C853</color>
+
+    <color name="accent_taxi_dark">#C4A000</color>
+</resources>
