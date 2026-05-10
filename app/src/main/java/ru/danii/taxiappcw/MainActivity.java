@@ -34,6 +34,7 @@ import java.util.Locale;
 
 import ru.danii.taxiappcw.receivers.NetworkChangeReceiver;
 import ru.danii.taxiappcw.utils.SettingsManager;
+import ru.danii.taxiappcw.utils.ClipboardHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -123,6 +124,26 @@ public class MainActivity extends AppCompatActivity {
             // Запускаем историю через лаунчер
             Intent intent = new Intent(this, HistoryActivity.class);
             historyLauncher.launch(intent);
+        });
+
+        findViewById(R.id.btnPasteFrom).setOnClickListener(v -> {
+            String text = ClipboardHelper.pasteFromClipboard(this);
+            if (!text.isEmpty()) {
+                etDeparture.setText(text);
+                Toast.makeText(this, "Адрес вставлен", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Буфер обмена пуст", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        findViewById(R.id.btnPasteTo).setOnClickListener(v -> {
+            String text = ClipboardHelper.pasteFromClipboard(this);
+            if (!text.isEmpty()) {
+                etDestination.setText(text);
+                Toast.makeText(this, "Адрес вставлен", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Буфер обмена пуст", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
