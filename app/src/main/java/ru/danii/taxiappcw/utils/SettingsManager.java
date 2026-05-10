@@ -11,7 +11,7 @@ public class SettingsManager {
 
     private static final String PREF_NAME = "taxi_settings";
     private static final String KEY_THEME = "theme_mode";
-
+    private static final String KEY_TRIP_ACTIVE = "is_trip_active";
     private final SharedPreferences prefs;
 
     public SettingsManager(Context context) {
@@ -51,5 +51,21 @@ public class SettingsManager {
                 prefs.getString("last_to", ""),
                 prefs.getString("last_tariff", "Эконом")
         };
+    }
+
+    /**
+     * Устанавливает статус активности текущей поездки.
+     * @param isActive true, если поездка идет, false в остальных случаях.
+     */
+    public void setTripActive(boolean isActive) {
+        prefs.edit().putBoolean(KEY_TRIP_ACTIVE, isActive).apply();
+    }
+
+    /**
+     * Проверяет, осталась ли незавершенная поездка.
+     * @return статус активности поездки.
+     */
+    public boolean isTripActive() {
+        return prefs.getBoolean(KEY_TRIP_ACTIVE, false);
     }
 }

@@ -209,7 +209,8 @@ public class ActiveTripActivity extends AppCompatActivity {
                 isTripSaved = true; // Блокируем повторную запись
             }
         }
-
+        // Сохраняем, что поездка активна
+        settingsManager.setTripActive(true);
         sendStatusNotification("Ищем машину...");
 
 
@@ -245,6 +246,8 @@ public class ActiveTripActivity extends AppCompatActivity {
             triggerVibration();
             notifyStatusChange(status);
 
+            // Сбрасываем флаг
+            settingsManager.setTripActive(false);
             // Останавливаем сервис
             stopTaxiService();
 
@@ -264,6 +267,8 @@ public class ActiveTripActivity extends AppCompatActivity {
         sendBroadcast(intent);
     }
     private void stopTaxiService() {
+        // Сбрасываем флаг
+        settingsManager.setTripActive(false);
         // 1. ОСТАНАВЛИВАЕМ ВСЕ ТАЙМЕРЫ
         if (simulationHandler != null) {
             simulationHandler.removeCallbacksAndMessages(null);

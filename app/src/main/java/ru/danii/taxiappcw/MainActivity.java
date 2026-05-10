@@ -2,6 +2,7 @@ package ru.danii.taxiappcw;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -31,10 +32,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import ru.danii.taxiappcw.receivers.NetworkChangeReceiver;
 import ru.danii.taxiappcw.utils.SettingsManager;
 
 public class MainActivity extends AppCompatActivity {
 
+    private NetworkChangeReceiver networkReceiver;
     private EditText etDeparture, etDestination;
     private FusedLocationProviderClient fusedLocationClient;
     private SettingsManager settingsManager;
@@ -54,12 +57,28 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // 1. Применяем тему. settingsManager просто вызывает AppCompatDelegate
         settingsManager = new SettingsManager(this);
-        settingsManager.applyTheme(settingsManager.getThemeMode());
+
+        // ПРОВЕРКА: Если поездка еще идет, MainActivity закрывается, открывается ActiveTrip
+        if (settingsManager.isTripActive()) {
+            String[] lastTrip = settingsManager.getLastTrip();
+
+            // 2. Создаем Intent и ПЕРЕДАЕМ данные обратно
+            Intent intent = new Intent(this, ActiveTripActivity.class);
+            intent.putExtra("EXTRA_DEPARTURE", lastTrip[0]);
+            intent.putExtra("EXTRA_DESTINATION", lastTrip[1]);
+            intent.putExtra("TARIFF", lastTrip[2]);
+
+            // Флаги, чтобы не создавать цепочку экранов
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish(); // Закрываем Main, чтобы он не висел в фоне
+            return;
+        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         initViews();
@@ -72,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
         // Если нет — ничего не делаем.
         int savedMode = settingsManager.getThemeMode();
         settingsManager.applyTheme(savedMode);
+        networkReceiver = new NetworkChangeReceiver();
+        IntentFilter filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+        registerReceiver(networkReceiver, filter);
     }
 
     private void initViews() {
@@ -200,6 +222,14 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Данные последней поездки загружены", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "История пуста", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (networkReceiver != null) {
+            unregisterReceiver(networkReceiver);
         }
     }
 }
