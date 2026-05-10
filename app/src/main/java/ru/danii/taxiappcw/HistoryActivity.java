@@ -49,16 +49,23 @@ public class HistoryActivity extends AppCompatActivity {
         }
         cursor.close();
 
-        // Создаем адаптер с обработчиком клика
         HistoryAdapter adapter = new HistoryAdapter(trips, trip -> {
-            // ЛОГИКА КЛИКА: Возвращаем данные в MainActivity
             Intent intent = new Intent();
             intent.putExtra("SELECTED_FROM", trip.from);
             intent.putExtra("SELECTED_TO", trip.to);
             setResult(RESULT_OK, intent);
-            finish(); // Закрываем историю
+            finish();
+        });
+        recyclerView.setAdapter(adapter);
+
+        // --- ДОБАВЛЯЕМ ОБРАБОТЧИК КНОПКИ ОЧИСТКИ ---
+        findViewById(R.id.btnClearHistory).setOnClickListener(v -> {
+            dbHelper.clearHistory(); // Удаляем из БД
+            trips.clear();           // Очищаем локальный список
+            adapter.notifyDataSetChanged(); // Обновляем UI
         });
 
         recyclerView.setAdapter(adapter);
+
     }
 }

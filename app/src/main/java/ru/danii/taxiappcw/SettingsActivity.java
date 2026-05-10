@@ -9,6 +9,8 @@ import ru.danii.taxiappcw.utils.SettingsManager;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.google.android.material.materialswitch.MaterialSwitch;
+
 public class SettingsActivity extends AppCompatActivity {
 
     private SettingsManager settingsManager;
@@ -60,6 +62,12 @@ public class SettingsActivity extends AppCompatActivity {
                 settingsManager.applyTheme(newMode);
                 // Теперь НЕ вызываем recreate(), чтобы не ломать логику переходов
             }
+        });
+
+        MaterialSwitch swVibration = findViewById(R.id.swVibration);
+        swVibration.setChecked(settingsManager.isVibrationEnabled());
+        swVibration.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            settingsManager.setVibrationEnabled(isChecked);
         });
     }
 

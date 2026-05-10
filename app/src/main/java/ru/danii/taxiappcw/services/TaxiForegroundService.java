@@ -30,7 +30,7 @@ public class TaxiForegroundService extends Service {
     }
 
     /**
-     * Вызывается при запуске сервиса. Создает стойкое уведомление (Sticky Notification),
+     * Вызывается при запуске сервиса. Создает закреплённое уведомление (Sticky Notification),
      * которое удерживает сервис в памяти системы.
      */
     @Override

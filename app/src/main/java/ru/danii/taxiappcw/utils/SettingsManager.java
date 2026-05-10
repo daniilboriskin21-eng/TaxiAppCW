@@ -68,4 +68,12 @@ public class SettingsManager {
     public boolean isTripActive() {
         return prefs.getBoolean(KEY_TRIP_ACTIVE, false);
     }
+
+    public void setVibrationEnabled(boolean enabled) {
+        prefs.edit().putBoolean("vibration_enabled", enabled).apply();
+    }
+
+    public boolean isVibrationEnabled() {
+        return prefs.getBoolean("vibration_enabled", true); // По умолчанию включена
+    }
 }

@@ -37,7 +37,7 @@
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
     <string name="theme_system">Системная</string>
-    <string name="dev_info">Разработчик: Даниил\nВариант №3: Заказ такси</string>
+    <string name="dev_info">Студент: Борискин Даниил\nГруппа: 220621\nГод: 2026\nВариант №3: Заказ такси</string>
 
     <string name="error_no_internet">Внимание: отсутствует подключение к сети. Заказ может быть недоступен.</string>
     <string name="network_restored">Соединение восстановлено</string>

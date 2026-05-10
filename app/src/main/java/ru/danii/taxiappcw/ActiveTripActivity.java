@@ -22,6 +22,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import ru.danii.taxiappcw.receivers.TripBroadcastReceiver;
 import ru.danii.taxiappcw.services.TaxiForegroundService;
 import ru.danii.taxiappcw.utils.SettingsManager;
@@ -40,17 +44,57 @@ public class ActiveTripActivity extends AppCompatActivity {
     private SettingsManager settingsManager;
 
     // Лаунчер для разрешения на уведомления (Android 13+)
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    // Разрешение получено, можно запускать отслеживание и уведомления
-                    startLocationTracking();
+    // Лаунчер для обработки сразу нескольких разрешений
+    private final ActivityResultLauncher<String[]> requestPermissionsLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), permissions -> {
+
+                // Проверка GPS
+                Boolean locationGranted = permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
+                // Проверка уведомлений
+                Boolean notificationsGranted = false;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    notificationsGranted = permissions.getOrDefault(Manifest.permission.POST_NOTIFICATIONS, false);
                 } else {
-                    Toast.makeText(this, "Без уведомлений вы не узнаете о прибытии такси", Toast.LENGTH_SHORT).show();
-                    // Всё равно запускаем, но уведомлений не будет
-                    startLocationTracking();
+                    notificationsGranted = true; // Для старых версий Android они включены по умолчанию
                 }
+
+                // Логика отказа GPS (Критично)
+                if (!locationGranted) {
+                    Toast.makeText(this, "Отмена: без GPS мы не сможем отследить поездку.", Toast.LENGTH_LONG).show();
+                    finish(); // Закрываем экран поездки, возвращаемся назад
+                    return;
+                }
+
+                // Логика отказа Уведомлений (Не критично, но предупреждаем)
+                if (!notificationsGranted) {
+                    Toast.makeText(this, "Уведомления отключены. Вы не узнаете о прибытии, свернув приложение.", Toast.LENGTH_LONG).show();
+                }
+
+                startLocationTracking();
             });
+    /**
+     * Выполняет комплексную проверку разрешений на местоположение и уведомления.
+     * Запускает сервис только при наличии всех необходимых доступов.
+     */
+    private void checkPermissionsAndStart() {
+        List<String> permissionsToRequest = new ArrayList<>();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
+
+        if (!permissionsToRequest.isEmpty()) {
+            requestPermissionsLauncher.launch(permissionsToRequest.toArray(new String[0]));
+        } else {
+            startLocationTracking();
+        }
+    }
 
     /**
      * Инициализирует компоненты интерфейса и запускает проверку разрешений.
@@ -96,30 +140,7 @@ public class ActiveTripActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(v -> stopTaxiService());
     }
 
-    /**
-     * Выполняет комплексную проверку разрешений на местоположение и уведомления.
-     * Запускает сервис только при наличии всех необходимых доступов.
-     */
-    private void checkPermissionsAndStart() {
-        // 1. Проверяем GPS (ACCESS_FINE_LOCATION)
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-            return;
-        }
 
-        // 2. Проверяем Уведомления (только для Android 13+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-                return;
-            }
-        }
-
-        // Если всё есть — поехали!
-        startLocationTracking();
-    }
 
     private void displayOrderInfo() {
         Bundle extras = getIntent().getExtras();
@@ -176,45 +197,26 @@ public class ActiveTripActivity extends AppCompatActivity {
      * Использует Vibrator для старых версий и VibrationEffect для новых.
      */
     private void triggerVibration() {
+        // --- ПРОВЕРКА НАСТРОЙКИ ---
+        if (!settingsManager.isVibrationEnabled()) return;
+
         android.os.Vibrator v = (android.os.Vibrator) getSystemService(android.content.Context.VIBRATOR_SERVICE);
         if (v == null || !v.hasVibrator()) return;
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            // Короткая двойная вибрация для API 26+
             v.vibrate(android.os.VibrationEffect.createOneShot(500, android.os.VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
-            // Для старых устройств
             v.vibrate(500);
         }
     }
-    private boolean isTripSaved = false; // Поле класса в самом верху
-
     /**
      * Имитирует этапы выполнения заказа: ожидание, путь и завершение.
      * Обновляет UI и отправляет системные уведомления.
      */
     private void startTripSimulation() {
-        // Сохраняем ТОЛЬКО ОДИН РАЗ в момент фактического начала процесса
-        if (!isTripSaved) {
-            Bundle extras = getIntent().getExtras();
-            if (extras != null) {
-                String departure = extras.getString("EXTRA_DEPARTURE", "");
-                String destination = extras.getString("EXTRA_DESTINATION", "");
-                String tariff = extras.getString("TARIFF", "");
-
-                settingsManager.saveLastTrip(departure, destination, tariff);
-                DatabaseHelper dbHelper = new DatabaseHelper(this);
-                dbHelper.addRide(departure, destination, tariff);
-
-                isTripSaved = true; // Блокируем повторную запись
-            }
-        }
-        // Сохраняем, что поездка активна
-        settingsManager.setTripActive(true);
         sendStatusNotification("Ищем машину...");
 
-
-        // Твой текущий код симуляции (Handler и т.д.)
+        // Этап 1: Водитель найден
         simulationHandler.postDelayed(() -> {
             String status = "Водитель на месте";
             tvTripStatus.setText(status);
@@ -236,8 +238,7 @@ public class ActiveTripActivity extends AppCompatActivity {
             notifyStatusChange(status);
         }, 10000);
 
-        // Этап 3: Завершение и переход в MAIN
-        // Внутри startTripSimulation, в самом последнем блоке (через 20 сек)
+        // Этап 3: Завершение, СОХРАНЕНИЕ В БД и переход
         simulationHandler.postDelayed(() -> {
             String status = "Приехали! Спасибо за поездку.";
             tvTripStatus.setText(status);
@@ -246,17 +247,22 @@ public class ActiveTripActivity extends AppCompatActivity {
             triggerVibration();
             notifyStatusChange(status);
 
-            // Сбрасываем флаг
-            settingsManager.setTripActive(false);
-            // Останавливаем сервис
+            // --- СОХРАНЕНИЕ ПРОИСХОДИТ ТОЛЬКО В КОНЦЕ ПОЕЗДКИ ---
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                String departure = extras.getString("EXTRA_DEPARTURE", "");
+                String destination = extras.getString("EXTRA_DESTINATION", "");
+                String tariff = extras.getString("TARIFF", "");
+
+                settingsManager.saveLastTrip(departure, destination, tariff);
+                DatabaseHelper dbHelper = new DatabaseHelper(this);
+                dbHelper.addRide(departure, destination, tariff);
+            }
+            // ----------------------------------------------------
+
+            // Останавливаем сервис (внутри него уже зашит переход в MainActivity и finish())
             stopTaxiService();
 
-            // Переходим на главный экран и очищаем стек
-            Intent intent = new Intent(ActiveTripActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-
-            finish(); // Закрываем экран поездки
         }, 20000);
     }
 
@@ -284,14 +290,6 @@ public class ActiveTripActivity extends AppCompatActivity {
         startActivity(intent);
 
         finish();
-    }
-    private void checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            startLocationTracking();
-        } else {
-            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
     }
 
     private void startLocationTracking() {

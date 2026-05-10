@@ -53,4 +53,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(TaxiContract.RideEntry.TABLE_NAME, null, values);
         db.close();
     }
+
+    public void clearHistory() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TaxiContract.RideEntry.TABLE_NAME, null, null);
+        db.close();
+    }
 }
