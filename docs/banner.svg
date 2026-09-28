@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
+  <title id="title">Taxi App CW</title>
+  <desc id="desc">Учебное Android-приложение заказа такси. Java, SQLite, Yandex MapKit.</desc>
+  <rect width="1200" height="320" rx="24" fill="#171b23"/>
+  <rect x="48" y="48" width="166" height="32" rx="16" fill="#f4c44e"/>
+  <text x="131" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#171b23">ANDROID / JAVA</text>
+  <text x="48" y="158" font-family="Arial, sans-serif" font-size="64" font-weight="700" fill="#ffffff">Taxi App CW</text>
+  <text x="50" y="207" font-family="Arial, sans-serif" font-size="25" fill="#c1c9d6">Учебное приложение заказа такси</text>
+  <text x="50" y="266" font-family="Arial, sans-serif" font-size="18" fill="#93a0b3">КАРТЫ · ТАРИФЫ · ИСТОРИЯ ПОЕЗДОК</text>
+  <path d="M855 88 H1050 Q1110 88 1110 148 V180 Q1110 232 1050 232 H892" fill="none" stroke="#f4c44e" stroke-width="7" stroke-linecap="round" stroke-dasharray="12 14"/>
+  <circle cx="855" cy="88" r="19" fill="#f4c44e"/>
+  <circle cx="855" cy="88" r="7" fill="#171b23"/>
+  <rect x="858" y="214" width="36" height="36" rx="10" fill="#f4c44e"/>
+</svg>

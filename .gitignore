@@ -13,3 +13,17 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Local IDE state
+/.idea/
+
+# Signing keys and generated packages
+*.jks
+*.keystore
+*.apk
+*.aab
+
+# Local environment overrides
+.env
+.env.*
+!.env.example

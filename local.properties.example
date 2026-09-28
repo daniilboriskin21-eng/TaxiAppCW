@@ -1,0 +1,3 @@
+# Android Studio creates sdk.dir for your machine.
+# Add this property to local.properties, preserving the existing sdk.dir:
+MAPKIT_API_KEY=your_mapkit_api_key

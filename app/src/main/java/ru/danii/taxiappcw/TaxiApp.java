@@ -7,8 +7,8 @@ public class TaxiApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // Ключ и инициализация теперь живут здесь вечно
-        MapKitFactory.setApiKey("b2ed3938-0be6-4dde-94a4-b672bf916d6d");
+        // Ключ берётся из локальной конфигурации сборки.
+        MapKitFactory.setApiKey(BuildConfig.MAPKIT_API_KEY);
         MapKitFactory.initialize(this);
     }
 }
